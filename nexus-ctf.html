@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS CORP — Internal Portal</title>
+<!-- DEENSEC{h1dd3n_1n_html_c0mm3nt} -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=DM+Sans:wght@300;400;600&display=swap');
+:root{--bg:#080b10;--surface:#0d1117;--border:#161d27;--accent:#00e5ff;--green:#00ff88;--red:#ff2d55;--orange:#ff9f1c;--purple:#a855f7;--muted:#3d4a5c;--text:#c9d1d9;--mono:'Share Tech Mono',monospace;--sans:'DM Sans',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+nav{background:rgba(13,17,23,.95);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;gap:0;height:54px;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.nav-logo{font-family:var(--mono);color:var(--accent);letter-spacing:4px;font-size:1rem;margin-right:2.5rem;flex-shrink:0}
+.nav-link{color:var(--muted);font-size:.75rem;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;padding:0 1rem;height:54px;display:flex;align-items:center;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;flex-shrink:0}
+.nav-link:hover,.nav-link.active{color:var(--accent);border-bottom-color:var(--accent)}
+.nav-right{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.nav-right span{color:var(--orange)}
+.app{position:relative;z-index:1}
+.page{display:none;max-width:800px;margin:0 auto;padding:2.5rem 1.5rem}
+.page.active{display:block}
+.page-title{font-family:var(--mono);font-size:.8rem;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:1.8rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1.2rem;position:relative}
+.card-label{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem}
+.card-accent-green::before,.card-accent-red::before,.card-accent-orange::before,.card-accent-purple::before,.card-accent-cyan::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:6px 0 0 6px}
+.card-accent-green::before{background:var(--green)}
+.card-accent-red::before{background:var(--red)}
+.card-accent-orange::before{background:var(--orange)}
+.card-accent-purple::before{background:var(--purple)}
+.card-accent-cyan::before{background:var(--accent)}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.7rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.35rem;font-family:var(--mono)}
+input[type=text],input[type=password],textarea,select{width:100%;background:#060911;border:1px solid var(--border);border-radius:4px;padding:.65rem .9rem;color:var(--text);font-family:var(--mono);font-size:.85rem;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,229,255,.07)}
+textarea{resize:vertical;min-height:70px}
+.btn{display:inline-block;border:none;border-radius:4px;padding:.6rem 1.4rem;font-family:var(--sans);font-weight:600;font-size:.82rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .1s}
+.btn:hover{opacity:.85}.btn:active{transform:scale(.98)}
+.btn-cyan{background:var(--accent);color:#000}.btn-green{background:var(--green);color:#000}
+.btn-red{background:var(--red);color:#fff}.btn-orange{background:var(--orange);color:#000}
+.btn-purple{background:var(--purple);color:#fff}.btn-full{width:100%}
+.out-box{margin-top:.9rem;padding:.9rem 1rem;background:#060911;border:1px solid var(--border);border-radius:4px;font-family:var(--mono);font-size:.82rem;color:var(--muted);min-height:44px;word-break:break-all;line-height:1.5}
+.flag-box{margin-top:.9rem;padding:1rem;background:rgba(0,255,136,.05);border:1px dashed var(--green);border-radius:4px;font-family:var(--mono);font-size:.85rem;color:var(--green);word-break:break-all;display:none}
+.msg-error{background:rgba(255,45,85,.08);border:1px solid var(--red)!important;color:#ff6b8a}
+.msg-success{background:rgba(0,255,136,.06);border:1px solid var(--green)!important;color:var(--green)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;margin-bottom:1.2rem}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1.1rem}
+.stat-num{font-family:var(--mono);font-size:1.6rem;color:var(--accent)}
+.stat-lbl{font-size:.68rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:.2rem}
+.vtable{width:100%;border-collapse:collapse;font-size:.82rem}
+.vtable th{font-family:var(--mono);font-size:.65rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:.6rem .8rem;border-bottom:1px solid var(--border);text-align:left}
+.vtable td{padding:.65rem .8rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+.vtable tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:3px;font-family:var(--mono);font-size:.65rem;letter-spacing:1px}
+.badge-e{background:rgba(0,255,136,.12);color:var(--green)}
+.badge-m{background:rgba(255,159,28,.12);color:var(--orange)}
+.cookie-bar{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.8rem 1rem;font-family:var(--mono);font-size:.75rem;color:var(--muted);margin-bottom:1.2rem;word-break:break-all}
+.cookie-bar b{color:var(--orange)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:2rem;max-width:460px;width:90%;position:relative;box-shadow:0 0 40px rgba(0,229,255,.15)}
+.modal-title{font-family:var(--mono);color:var(--accent);letter-spacing:3px;font-size:.9rem;margin-bottom:1rem}
+.modal-body{font-family:var(--mono);font-size:.82rem;color:var(--green);background:rgba(0,255,136,.06);border:1px dashed var(--green);border-radius:4px;padding:1rem;word-break:break-all;margin-bottom:1rem;white-space:pre-wrap}
+.modal-sub{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
+.modal-close{position:absolute;top:1rem;right:1rem;cursor:pointer;color:var(--muted);font-size:1.2rem;background:none;border:none}
+.modal-close:hover{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">// XSS PAYLOAD EXECUTED</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-sub">cookie data captured via reflected XSS</div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-logo">NEXUS</div>
+  <div class="nav-link active" onclick="showPage('home',this)">Home</div>
+  <div class="nav-link" onclick="showPage('login',this)">Login</div>
+  <div class="nav-link" onclick="showPage('search',this)">Search</div>
+  <div class="nav-link" onclick="showPage('feedback',this)">Feedback</div>
+  <div class="nav-link" onclick="showPage('decoder',this)">Decoder</div>
+  <div class="nav-link" onclick="showPage('profile',this)">Profile</div>
+  <div class="nav-right">role: <span id="nav-role">guest</span></div>
+</nav>
+
+<div class="app">
+
+<div class="page active" id="page-home">
+  <div class="page-title">// dashboard</div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-num">07</div><div class="stat-lbl">Open Alerts</div></div>
+    <div class="stat"><div class="stat-num">142</div><div class="stat-lbl">Users Online</div></div>
+    <div class="stat"><div class="stat-num">99.8%</div><div class="stat-lbl">Uptime</div></div>
+  </div>
+  <div class="card">
+    <div class="card-label">challenge map</div>
+    <table class="vtable">
+      <thead><tr><th>#</th><th>Vulnerability</th><th>Location</th><th>Difficulty</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Ghost in the Markup</td><td>Page source</td><td><span class="badge badge-e">easy</span></td></tr>
+        <tr><td>2</td><td>Skeleton Key</td><td>Login</td><td><span class="badge badge-e">easy</span></td></tr>
+        <tr><td>3</td><td>Injection Point Alpha</td><td>Search</td><td><span class="badge badge-e">easy</span></td></tr>
+        <tr><td>4</td><td>Cookie Monster</td><td>Feedback</td><td><span class="badge badge-m">medium</span></td></tr>
+        <tr><td>5</td><td>Identity Crisis</td><td>Profile</td><td><span class="badge badge-e">easy</span></td></tr>
+        <tr><td>6</td><td>Ghost Route</td><td>Everywhere</td><td><span class="badge badge-m">medium</span></td></tr>
+        <tr><td>7</td><td>Base Instincts</td><td>Decoder</td><td><span class="badge badge-e">easy</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card card-accent-cyan">
+    <div class="card-label">rules</div>
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.7;">All flags are in <code style="color:var(--accent);">DEENSEC{...}</code> format. Use browser DevTools, page source, and the console. No brute force needed.</div>
+  </div>
+</div>
+
+<div class="page" id="page-login">
+  <div class="page-title">// employee login</div>
+  <div class="card card-accent-red" style="max-width:420px;margin:0 auto;">
+    <div class="card-label">authentication required</div>
+    <div class="field"><label>Username</label><input type="text" id="login-user" placeholder="username" autocomplete="off"></div>
+    <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+    <button class="btn btn-red btn-full" onclick="doLogin()">Sign In</button>
+    <div class="out-box" id="login-msg" style="display:none;margin-top:1rem;"></div>
+    <div class="flag-box" id="login-flag"></div>
+  </div>
+</div>
+
+<div class="page" id="page-search">
+  <div class="page-title">// knowledge base search</div>
+  <div class="card card-accent-green">
+    <div class="card-label">search articles</div>
+    <div style="display:flex;gap:.6rem;">
+      <input type="text" id="search-q" placeholder="search term..." style="flex:1;">
+      <button class="btn btn-green" onclick="doSearch()">Search</button>
+    </div>
+    <div class="out-box" id="search-results">Enter a query to search the knowledge base.</div>
+    <div class="flag-box" id="search-flag"></div>
+  </div>
+  <div class="card">
+    <div class="card-label">recent articles</div>
+    <div style="display:flex;flex-direction:column;gap:.7rem;">
+      <div style="padding:.8rem;background:#060911;border:1px solid var(--border);border-radius:4px;"><div style="font-size:.85rem;font-weight:600;color:var(--green);margin-bottom:.3rem;">SQL Injection Basics</div><div style="font-size:.78rem;color:var(--muted);">Tautology-based injections bypass authentication using boolean logic...</div></div>
+      <div style="padding:.8rem;background:#060911;border:1px solid var(--border);border-radius:4px;"><div style="font-size:.85rem;font-weight:600;color:var(--green);margin-bottom:.3rem;">SSRF in Modern Apps</div><div style="font-size:.78rem;color:var(--muted);">Server-Side Request Forgery pivots through internal network services...</div></div>
+      <div style="padding:.8rem;background:#060911;border:1px solid var(--border);border-radius:4px;"><div style="font-size:.85rem;font-weight:600;color:var(--green);margin-bottom:.3rem;">XSS: DOM vs Reflected</div><div style="font-size:.78rem;color:var(--muted);">Each XSS variant differs in injection point, persistence, and impact...</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-feedback">
+  <div class="page-title">// submit feedback</div>
+  <div class="card card-accent-purple" style="max-width:500px;">
+    <div class="card-label">feedback form</div>
+    <div class="cookie-bar">session: <b id="fb-cookie-display">loading...</b></div>
+    <div class="field"><label>Your Name</label><input type="text" id="fb-name" placeholder="enter your name" autocomplete="off"></div>
+    <div class="field"><label>Message</label><textarea id="fb-msg" placeholder="enter your feedback..."></textarea></div>
+    <button class="btn btn-purple btn-full" onclick="doFeedback()">Submit Feedback</button>
+    <div class="out-box" id="fb-output" style="margin-top:1rem;">// response will appear here</div>
+  </div>
+</div>
+
+<div class="page" id="page-profile">
+  <div class="page-title">// user profile</div>
+  <div class="card card-accent-orange" style="max-width:460px;">
+    <div class="card-label">session info</div>
+    <div style="font-family:var(--mono);font-size:.82rem;display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.2rem;">
+      <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted);">session_id</span><span id="prof-sid" style="color:var(--orange);">-</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);"><span style="color:var(--muted);">username</span><span style="color:var(--text);">guest_user</span></div>
+      <div style="display:flex;justify-content:space-between;padding:.5rem 0;"><span style="color:var(--muted);">isAdmin</span><span id="prof-admin" style="color:var(--red);">false</span></div>
+    </div>
+    <button class="btn btn-orange btn-full" onclick="checkAdmin()">Access Admin Features</button>
+    <div class="out-box" id="prof-msg" style="display:none;margin-top:1rem;"></div>
+    <div class="flag-box" id="prof-flag"></div>
+  </div>
+</div>
+
+<div class="page" id="page-decoder">
+  <div class="page-title">// text decoder utility</div>
+  <div class="card card-accent-cyan" style="max-width:500px;">
+    <div class="card-label">decoder</div>
+    <div style="margin-bottom:1rem;padding:.7rem .9rem;background:#060911;border:1px solid var(--border);border-radius:4px;font-family:var(--mono);font-size:.72rem;color:#1a3040;">
+      sys_token: <span style="color:#1a3545;user-select:all;">REVFTNRPQ3tiNHMzNjRfM25jMGQzZF9zM2NyM3Rfa2V5fQ==</span>
+    </div>
+    <div class="field"><label>Input</label><input type="text" id="dec-input" placeholder="paste encoded string..."></div>
+    <div class="field"><label>Encoding Type</label>
+      <select id="dec-type">
+        <option value="base64">Base64</option>
+        <option value="hex">Hex</option>
+        <option value="url">URL Decode</option>
+      </select>
+    </div>
+    <button class="btn btn-cyan btn-full" onclick="doDecode()">Decode</button>
+    <div class="out-box" id="dec-out">// decoded output will appear here</div>
+    <div class="flag-box" id="dec-flag"></div>
+  </div>
+</div>
+
+<div class="page" id="page-a9x7z">
+  <div class="page-title">// admin control panel</div>
+  <div class="card card-accent-red">
+    <div class="card-label">restricted area</div>
+    <div style="font-size:.83rem;color:var(--muted);line-height:1.7;margin-bottom:1.2rem;">You navigated to a route that was never linked in the navigation — but existed in the JavaScript. Broken access control via client-side obscurity.</div>
+    <div class="flag-box" id="admin-flag" style="display:block;border-color:var(--red);background:rgba(255,45,85,.07);color:var(--red);">decrypting...</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const _E = {
+  ch2: "lToBaM+q3BqxRBNUdi5qtqMg6MRUAdvukq9Wy9HoaRbljWJm3ATVioDDGdm/f3KtCUROQT8zHgRHdw==",
+  ch3: "EWZg/wIXfVq7VR+MgC9nJPVHA2WQSAav0iuKDukKFr1lcICjPKpqGejcobmtO2zFVbhF++65PCtWAg==",
+  ch4: "JsjmX6N9li4e2PSstzWL4/0P2HEvMuaaNNZUazfp8LW4Wtl2ntfT59+u0y8MBgKZlNNHawDpCXAaqiLdM+Dn",
+  ch5: "kbMlowkXpOUPDEgSkibS7R1DKqLnXGcXxI0BMi6EeDBQgENjwm72AKjMGY8oPIFtOdHR2kGIbU+5D2tp3F3p",
+  ch6: "7RgrrVWo5sqvpHW38LwVN2R08xaLAzpIX7+opgjYjZKMmxsqJu8nGI/xflnxrULT1z8KQcO2hhYL9RSRRUI=",
+  ch7: "4fLs0vvce83ZzpZmGbQQvdkRboSTmUaN3bdt3vvIMFEHP7qSHT8tq0LkFle0ZyvX1y9D3irTXtDxdNGRaw8="
+};
+
+async function deriveKey(pw) {
+  const raw = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+  return crypto.subtle.importKey('raw', raw, {name:'AES-GCM'}, false, ['decrypt']);
+}
+
+async function decryptFlag(b64, pw) {
+  try {
+    const buf = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const iv  = buf.slice(0, 12);
+    const tag = buf.slice(12, 28);
+    const ct  = buf.slice(28);
+    const key = await deriveKey(pw);
+    const combined = new Uint8Array(ct.length + tag.length);
+    combined.set(ct); combined.set(tag, ct.length);
+    const plain = await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, combined);
+    return new TextDecoder().decode(plain);
+  } catch { return null; }
+}
+
+const PAGES = ['home','login','search','feedback','profile','decoder','a9x7z'];
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (el) el.classList.add('active');
+  if (id === 'a9x7z') revealAdminFlag();
+  updateCookieDisplays();
+}
+// const _username = "n3xus_admin";
+//   const _password = "p@ssw0rd_1337";
+async function revealAdminFlag() {
+  const el = document.getElementById('admin-flag');
+  const flag = await decryptFlag(_E.ch6, 'admin_9x7z_found');
+  el.textContent = flag ? 'FLAG: ' + flag : 'decryption failed';
+}
+
+function getCookie(n) { const m = document.cookie.match(new RegExp('(^| )'+n+'=([^;]+)')); return m ? m[2] : null; }
+function setCookie(n, v) { document.cookie = n+'='+v+'; path=/'; }
+
+function initCookies() {
+  if (!getCookie('isAdmin'))    setCookie('isAdmin', 'false');
+  if (!getCookie('session_id')) setCookie('session_id', 'sess_'+Math.random().toString(36).slice(2,10));
+  if (!getCookie('role'))       setCookie('role', 'guest');
+}
+
+function updateCookieDisplays() {
+  const admin = getCookie('isAdmin');
+  const sid   = getCookie('session_id');
+  const pa = document.getElementById('prof-admin');
+  if (pa) { pa.textContent = admin; pa.style.color = admin==='true' ? 'var(--green)' : 'var(--red)'; }
+  const ps = document.getElementById('prof-sid');
+  if (ps) ps.textContent = sid || '-';
+  const fb = document.getElementById('fb-cookie-display');
+  if (fb) fb.textContent = document.cookie;
+  const nr = document.getElementById('nav-role');
+  if (nr) nr.textContent = admin==='true' ? 'admin' : 'guest';
+}
+
+setInterval(updateCookieDisplays, 600);
+
+async function doLogin() {
+  const u   = document.getElementById('login-user').value;
+  const p   = document.getElementById('login-pass').value;
+  const msg = document.getElementById('login-msg');
+  const flg = document.getElementById('login-flag');
+  msg.style.display = 'block'; flg.style.display = 'none';
+  msg.className = 'out-box';
+  const flag = await decryptFlag(_E.ch2, u + p);
+  if (flag) {
+    msg.classList.add('msg-success');
+    msg.textContent = '[ ACCESS GRANTED ] Welcome, ' + u;
+    flg.style.display = 'block';
+    flg.textContent = 'FLAG: ' + flag;
+  } else {
+    msg.classList.add('msg-error');
+    msg.textContent = '[ ACCESS DENIED ] Invalid credentials.';
+  }
+}
+
+function doSearch() {
+  const q   = document.getElementById('search-q').value;
+  const out = document.getElementById('search-results');
+  if (!q) { out.innerHTML = '// no query provided'; return; }
+  out.innerHTML = 'Results for: <strong style="color:var(--green);">' + q + '</strong>';
+}
+
+async function domXssSuccess() {
+  const f    = document.getElementById('search-flag');
+  const flag = await decryptFlag(_E.ch3, 'domxss_solved');
+  f.style.display = 'block';
+  f.textContent = flag ? 'FLAG: ' + flag : 'decryption failed';
+}
+
+async function stealCookie() {
+  const flag = await decryptFlag(_E.ch4, 'reflected_xss_solved');
+  document.getElementById('modal-body').textContent =
+    'Captured: ' + document.cookie + '\n\nFLAG: ' + (flag || 'decryption failed');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function doFeedback() {
+  const name = document.getElementById('fb-name').value;
+  const out  = document.getElementById('fb-output');
+  if (!name) { out.textContent = '// name field is required'; return; }
+  out.innerHTML = 'Thank you, <strong>' + name + '</strong>! Your feedback has been recorded.';
+}
+
+async function checkAdmin() {
+  const admin = getCookie('isAdmin');
+  const msg   = document.getElementById('prof-msg');
+  const flg   = document.getElementById('prof-flag');
+  msg.style.display = 'block'; flg.style.display = 'none';
+  msg.className = 'out-box';
+  if (admin === 'true') {
+    const flag = await decryptFlag(_E.ch5, 'isAdmin_true');
+    msg.classList.add('msg-success');
+    msg.textContent = '[ ADMIN ACCESS GRANTED ] Cookie verified.';
+    flg.style.display = 'block';
+    flg.textContent = flag ? 'FLAG: ' + flag : 'decryption failed';
+  } else {
+    msg.classList.add('msg-error');
+    msg.textContent = '[ 403 FORBIDDEN ] Admin only. Check your session cookies.';
+  }
+}
+
+async function doDecode() {
+  const inp  = document.getElementById('dec-input').value.trim();
+  const type = document.getElementById('dec-type').value;
+  const out  = document.getElementById('dec-out');
+  const flg  = document.getElementById('dec-flag');
+  flg.style.display = 'none';
+  if (!inp) { out.textContent = '// no input'; return; }
+  try {
+    let r = '';
+    if (type === 'base64') r = atob(inp);
+    else if (type === 'hex') r = inp.match(/.{1,2}/g).map(b => String.fromCharCode(parseInt(b,16))).join('');
+    else if (type === 'url') r = decodeURIComponent(inp);
+    out.textContent = '// decoded → ' + r;
+    if (r === 'DEENSEC_decoder_key') {
+      const flag = await decryptFlag(_E.ch7, r);
+      if (flag) { flg.style.display = 'block'; flg.textContent = 'FLAG: ' + flag; }
+    }
+  } catch(e) { out.textContent = '// error: ' + e.message; }
+}
+
+const _origAlert = window.alert.bind(window);
+window.alert = function(msg) {
+  const str = String(msg);
+  if (str.includes('isAdmin') || str.includes('session_id') || str.includes('sess_')) {
+    stealCookie();
+  } else {
+    _origAlert(str);
+  }
+};
+
+initCookies();
+updateCookieDisplays();
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const id = document.querySelector('.page.active')?.id;
+  if (id === 'page-login')   doLogin();
+  if (id === 'page-search')  doSearch();
+  if (id === 'page-decoder') doDecode();
+});
+</script>
+</body>
+</html>
